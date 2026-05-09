@@ -1,0 +1,74 @@
+
+from fastapi import FastAPI, APIRouter, Depends, HTTPException, status, Response
+from sqlalchemy.orm import Session
+from app.db.session import get_db
+from app.models.model import Post
+from app.schemas.schema import (
+    createPost,
+    returnPost
+)
+from app.utils.oauth2 import get_current_user
+
+router = APIRouter(
+    prefix="/post",
+    tags=["Posts"]
+)
+
+
+@router.get("/")
+async def get_posts(db: Session = Depends(get_db)):
+    get_post = db.query(Post).all()
+    if not get_post:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="There is not post create 1st post")
+    return get_post
+
+@router.post("/", response_model=returnPost)
+async def create_post(create: createPost,db: Session = Depends(get_db), user_id: int = Depends(get_current_user)):
+    new_Post = Post(title = create.title, description= create.description)
+    db.add(new_Post)
+    db.commit()
+    db.refresh(new_Post)
+    return new_Post
+
+@router.get("/{id}")
+async def get_post(id: int,db: Session = Depends(get_db)):
+    one_Post = db.query(Post).filter(Post.id == id).first()
+    if not one_Post:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"There is not post with id = {id}")
+    return one_Post
+
+@router.put("/{id}")
+async def update_post(
+    update: createPost,
+    id: int,
+    db: Session = Depends(get_db),
+    user_id: int = Depends(get_current_user)
+):
+    find_post= db.query(Post).filter(Post.id == id)
+    
+    if not find_post.first():
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="This post is not available anymore")
+    
+    updated_post = find_post.update({
+        "title": update.title,
+        "description": update.description
+        }, synchronize_session=False
+    )
+    db.commit()
+    # db.refresh(updated_post)
+    return find_post.first()
+
+@router.delete("/{id}")
+async def delete_post(
+    id: int,
+    db: Session = Depends(get_db),
+    user_id: int = Depends(get_current_user)
+):
+    find = db.query(Post).filter(Post.id == id)
+    if not find.first( ):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="This post is not available anymore")
+
+    find.delete(synchronize_session=False)
+    db.commit()
+
+    return {"message": "Post has been delelted"}
