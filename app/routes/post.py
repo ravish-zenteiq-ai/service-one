@@ -24,7 +24,8 @@ async def get_posts(db: Session = Depends(get_db)):
 
 @router.post("/", response_model=returnPost)
 async def create_post(create: createPost,db: Session = Depends(get_db), user_id: int = Depends(get_current_user)):
-    new_Post = Post(title = create.title, description= create.description)
+    # new_Post = Post(title = create.title, description= create.description, owner_id=user_id.id)
+    new_Post = Post(owner_id=user_id.id ,**create.dict())
     db.add(new_Post)
     db.commit()
     db.refresh(new_Post)

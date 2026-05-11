@@ -8,8 +8,16 @@ class createPost(BaseModel):
     description: str =  Field(min_length=3)
     is_published: bool = True
 
+class resposePost(createPost):
+    created_at: datetime
+    owner_id: int
+
+
+
+
 class returnPost(createPost):
     created_at: datetime
+    owner_id: int
 
 
 class createUser(BaseModel):

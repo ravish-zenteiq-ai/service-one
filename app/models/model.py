@@ -15,12 +15,7 @@ class Post(Base):
         nullable=False,
         server_default=text('NOW()')
     )
-    # owner_id = Column(
-    #     Integer,
-    #     ForeignKey("users.id", ondelete="CASCADE"),
-    #     nullable=False  
-    # )
-    owner_id = Column(
+    owner_id=Column(
         Integer,
         ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False
