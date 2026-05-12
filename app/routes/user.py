@@ -9,7 +9,10 @@ router = APIRouter(
     prefix="/user",
     tags=["User"]
 )
-
+@router.get("/users")
+async def get_users( db: Session = Depends(get_db)):
+    users =db.query(User).all()
+    return users
 @router.post("/")
 async def create_user(create: createUser,db: Session = Depends(get_db)):
     hashed = create_hash(create.password)   
@@ -27,3 +30,4 @@ async def get_user(id: int, db: Session = Depends(get_db)):
     if not get_one:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="There is not post create 1st post")
     return get_one
+

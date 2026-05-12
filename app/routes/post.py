@@ -1,4 +1,5 @@
 
+from typing import Optional
 from fastapi import FastAPI, APIRouter, Depends, HTTPException, status, Response
 from sqlalchemy.orm import Session
 from app.db.session import get_db
@@ -16,8 +17,9 @@ router = APIRouter(
 
 
 @router.get("/")
-async def get_posts(db: Session = Depends(get_db)):
-    get_post = db.query(Post).all()
+async def get_posts(db: Session = Depends(get_db),limit: int = 10, skip: int = 0, search: Optional[str] = ""):
+    print(f"limit is {limit} and skip is {skip} and we are searching is {search}" )
+    get_post = db.query(Post).filter(Post.description.contains(search)).limit(limit).offset(skip).all()
     if not get_post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="There is not post create 1st post")
     return get_post
@@ -25,9 +27,11 @@ async def get_posts(db: Session = Depends(get_db)):
 @router.get("/my")
 async def my_post(
     db: Session = Depends(get_db),
-    user: int = Depends(get_current_user)
-):
-    get_post = db.query(Post).filter(Post.owner_id == user.id).all()
+    user: int = Depends(get_current_user),
+    limit: int = 10
+):  
+    print(limit)
+    get_post = db.query(Post).filter(Post.owner_id == user.id).limit().all()
     if not get_post:
          raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="There is not post create 1st post")
     return get_post

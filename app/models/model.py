@@ -1,4 +1,5 @@
-
+from __future__ import annotations
+from sqlalchemy.orm import relationship
 from sqlalchemy import Integer, String, Boolean, TIMESTAMP, text, ForeignKey
 from sqlalchemy import Column
 from app.db.base import Base
@@ -20,6 +21,7 @@ class Post(Base):
         ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False
     )
+    owner = relationship("User")
 
 class User(Base):
     __tablename__  = "users"

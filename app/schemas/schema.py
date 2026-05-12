@@ -18,6 +18,7 @@ class resposePost(createPost):
 class returnPost(createPost):
     created_at: datetime
     owner_id: int
+    owner: createUser
 
 
 class createUser(BaseModel):
@@ -26,6 +27,9 @@ class createUser(BaseModel):
     name: str
     job: str | None =None
 
+class UserOut(BaseModel):
+    email: EmailStr
+    created_at: datetime
 class loginUser(BaseModel):
     email: EmailStr
     passsword: str
