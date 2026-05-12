@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 
 from app.db.base import Base, create_engine, SessionLocal, engine
+
 import app.models.model as model
 
 from app.routes import (
@@ -8,6 +9,9 @@ from app.routes import (
     user,
     auth
 )
+from app.core.config import settings
+
+
 
 model.Base.metadata.create_all(bind=engine)
 
