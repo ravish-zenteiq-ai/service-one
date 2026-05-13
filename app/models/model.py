@@ -4,6 +4,7 @@ from sqlalchemy import Integer, String, Boolean, TIMESTAMP, text, ForeignKey
 from sqlalchemy import Column
 from app.db.base import Base
 
+
 class Post(Base):
     __tablename__ = "posts"
 
@@ -36,3 +37,10 @@ class User(Base):
         nullable=False,
         server_default=text('NOW()')
     )
+
+
+class Likes(Base):
+    __tablename__ = "likes"
+
+    users_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
+    post_id = Column(Integer,ForeignKey("posts.id", ondelete="CASCADE"), primary_key=True)

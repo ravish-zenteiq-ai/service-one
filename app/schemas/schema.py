@@ -1,6 +1,8 @@
+
 from __future__ import annotations
 from datetime import datetime
 from pydantic import BaseModel, Field, EmailStr
+from typing import Annotated
 from typing import Optional
 
 class createPost(BaseModel):
@@ -41,3 +43,7 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     id: int | None = None
     # created_at: datetime
+
+class Vote(BaseModel):
+    post_id: int
+    dir: Annotated[int, Field(ge=0, le=1)]

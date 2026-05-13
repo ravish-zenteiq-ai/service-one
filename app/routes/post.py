@@ -31,7 +31,7 @@ async def my_post(
     limit: int = 10
 ):  
     print(limit)
-    get_post = db.query(Post).filter(Post.owner_id == user.id).limit().all()
+    get_post = db.query(Post).filter(Post.owner_id == user.id).all()
     if not get_post:
          raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="There is not post create 1st post")
     return get_post
