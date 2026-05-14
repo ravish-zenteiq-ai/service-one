@@ -3,7 +3,7 @@ from app.db.session import get_db
 from sqlalchemy.orm import Session
 from app.schemas.schema import Vote
 from app.utils.oauth2 import get_current_user
-from app.models.model import Likes
+from app.models.model import Likes, Post
 
 router = APIRouter(
     prefix="/vote",
@@ -13,6 +13,12 @@ router = APIRouter(
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def do_vote(vote: Vote ,db: Session = Depends(get_db), user: int = Depends(get_current_user)):
+
+    post= db.query(Post).filter(Post.id == vote.post_id).first()
+    if  not post:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Post with {vote.post_id} is not available anymore")
+
+
     vote_query = db.query(Likes).filter(Likes.post_id == vote.post_id, Likes.users_id == user.id)
     vote_found = vote_query.first()
     if (vote.dir):
